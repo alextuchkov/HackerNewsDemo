@@ -1,23 +1,32 @@
-//
-//  ContentView.swift
-//  HackerNewsDemo
-//
-//  Created by Oleksandr Tuchkov on 21.10.2024.
-//
-
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+    
+    
+            var body: some View {
+                TabView {
+                    ListView(type:"beststories", navtitle: "Best")
+                        .tabItem {
+                            Label("Best", systemImage: "hand.thumbsup")
+                        }
+                    
+//                    ListView(type:"topstories", navtitle: "Top")
+//                        .tabItem {
+//                            Label("Top", systemImage: "star")
+//                        }
+                    
+                    ListView(type:"newstories", navtitle: "New")
+                        .tabItem {
+                            Label("New", systemImage: "flame")
+                        }
+                    SavedListView()
+                        .tabItem {
+                            Label("Saved", systemImage: "bookmark")
+                        }
+                }
+            }
         }
-        .padding()
-    }
-}
+        
 
 #Preview {
     ContentView()

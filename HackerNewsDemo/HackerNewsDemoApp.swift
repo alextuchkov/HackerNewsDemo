@@ -6,12 +6,22 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct HackerNewsDemoApp: App {
+
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                ContentView()
+            }
+            .modelContainer(for: LocalItem.self, inMemory: false) // Moved here
         }
     }
+    init() {
+        print(URL.applicationSupportDirectory.path(percentEncoded: false))
+    }
+
 }
