@@ -4,6 +4,8 @@
 //
 //  Created by Oleksandr Tuchkov on 21.10.2024.
 //
+
+
 import SwiftUI
 import SwiftData
 
@@ -19,12 +21,14 @@ struct ItemView: View {
                 Text(story.title)
                     .font(.headline)
                 
-                HStack {
+         
                     Text(story.displayURL)
                         .foregroundColor(.blue)
-                    Text(" - \(story.relativeDate) -")
-                    Text("by: \(story.author)")
-                }
+                    HStack {
+                        Text("\(story.relativeDate)")
+                        Spacer()
+                        Text("by: \(story.author)")
+                    }
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 
@@ -40,26 +44,59 @@ struct ItemView: View {
                 .font(.footnote)
                 .labelStyle(.titleAndIcon)
             }
-            Image(systemName: "bookmark")
-                .font(.title)
+            
+            if story.saved {
+                Image(systemName: "bookmark.fill")
+                    .font(.title)
+            }
+            else {
+                Image(systemName: "bookmark")
+                    .font(.title)
+            }
+            
+            
         }
         .padding(.vertical, 8)
         .swipeActions {
-            Button {
-                let newLocalStory = LocalItem(story:story, saved: true)
-                context.insert(newLocalStory)
-                do {
-                    try context.save()
-                } catch {
-                    print("Failed to save context after deletion: \(error)")
+    
+            if story.saved {
+                Button {
+                    toggleSavedStatus(for: story)
+                    
+                    do {
+                        try context.save()
+                    } catch {
+                        print("Failed to save context after deletion: \(error)")
+                    }
+                    dismiss()
+                    
+                } label: {
+                    Label("Delete", systemImage: "trash.fill")
                 }
-                dismiss()
+                .tint(.red)
                 
-            } label: {
-                Label("Bookmark", systemImage: "bookmark.fill")
+            } else {
+                Button {
+                    toggleSavedStatus(for: story)
+                    do {
+                        try context.save()
+                    } catch {
+                        print("Failed to save context after deletion: \(error)")
+                    }
+                    dismiss()
+                    
+                } label: {
+                    Label("Bookmark", systemImage: "bookmark.fill")
+                }
+                .tint(.orange)
+                
             }
-            .tint(.orange)
+            
+
         }
+    }
+    private func toggleSavedStatus(for item: Item) {
+        item.saved.toggle()
     }
 }
 

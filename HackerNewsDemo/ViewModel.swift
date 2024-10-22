@@ -6,15 +6,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @Observable
 @MainActor
 class ViewModel {
+    
+
+    var storiesDTO: [ItemDTO] = []
     var stories: [Item] = []
     
-//
-    
-    func getBestStories(withType type:String) async throws {
+    //TODO: clean print-logging statements
+    func getBestStories(withType type: String, context: ModelContext) async throws {
         guard let url = URL(string: "https://hacker-news.firebaseio.com/v0/\(type).json") else {
             print("Invalid URL")
             return
@@ -30,10 +33,10 @@ class ViewModel {
             let ids = try JSONDecoder().decode([Int].self, from: data)
 //            print("Story IDs: \(ids)")
             
-            var fetchedStories: [Item] = []
+            var fetchedStories: [ItemDTO] = []
             
             // Use TaskGroup for concurrent fetching of stories
-            try await withThrowingTaskGroup(of: Item.self) { group in
+            try await withThrowingTaskGroup(of: ItemDTO.self) { group in
                 for id in ids.prefix(10) {
                     group.addTask {
                         try await self.getStory(withID: id)
@@ -46,16 +49,25 @@ class ViewModel {
                 }
             }
             
-            self.stories = fetchedStories
+            self.storiesDTO = fetchedStories
 //            print("Fetched stories: \(fetchedStories)")
+            
+            // Convert DTO to Item and save it to SwiftData
+            for storyDTO in storiesDTO {
+                let item = Item(from: storyDTO)
+                self.stories.append(item)
+                context.insert(item)
+            }
+
+            try context.save()
        
         } catch {
             print("Failed to fetch or decode data: \(error.localizedDescription)")
-            throw error // Propagate error for handling upstream
+            throw error 
         }
     }
     
-    private func getStory(withID id: Int) async throws -> Item {
+    private func getStory(withID id: Int) async throws -> ItemDTO {
         guard let url = URL(string: "https://hacker-news.firebaseio.com/v0/item/\(id).json") else {
             throw URLError(.badURL)
         }
@@ -70,6 +82,6 @@ class ViewModel {
         // Use date decoding strategy if the date is a timestamp
         decoder.dateDecodingStrategy = .secondsSince1970
         
-        return try decoder.decode(Item.self, from: data)
+        return try decoder.decode(ItemDTO.self, from: data)
     }
 }
