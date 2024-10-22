@@ -1,9 +1,17 @@
+//
+//  ContentView.swift
+//  HackerNewsDemo
+//
+//  Created by Oleksandr Tuchkov on 21.10.2024.
+//
+
 import SwiftUI
 
 struct ContentView: View {
     @State var splashActive: Bool = false
     @State private var selectedTab: Tab = .best
 
+    // i remove default tapbar appearance
     init() {
         UITabBar.appearance().isHidden = true
     }
@@ -14,11 +22,11 @@ struct ContentView: View {
                 ZStack {
                     VStack {
                         TabView(selection: $selectedTab) {
-                            ListView(type: "beststories", navtitle: "Best")
+                            ListView(type: "beststories", navtitle: "Best", showSavedItems: false)
                                 .tag(Tab.best)
-                            ListView(type: "newstories", navtitle: "New")
+                            ListView(type: "newstories", navtitle: "New", showSavedItems: false)
                                 .tag(Tab.new)
-                            SavedListView()
+                            ListView(type: nil, navtitle: "Saved", showSavedItems: true)
                                 .tag(Tab.saved)
                         }
                     }

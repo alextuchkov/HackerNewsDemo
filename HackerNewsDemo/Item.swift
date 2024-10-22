@@ -1,8 +1,15 @@
+//
+//  Item.swift
+//  HackerNewsDemo
+//
+//  Created by Oleksandr Tuchkov on 21.10.2024.
+//
+
 import SwiftUI
 import SwiftData
 
 
-class Item: Decodable, Identifiable {
+class ItemDTO: Decodable, Identifiable {
     let id: Int
     let title: String
     let author: String
@@ -11,20 +18,7 @@ class Item: Decodable, Identifiable {
     let url: String
     let date: Date
 
-    
-    
-    init(id: Int, title: String, author: String, commentCount: Int, score: Int, url: String, date: Date) {
-        self.id = id
-        self.title = title
-        self.author = author
-        self.commentCount = commentCount
-        self.score = score
-        self.url = url
-        self.date = date
-      
-        
-    }
-    
+
     // CodingKeys to map json to my model
     enum CodingKeys: String, CodingKey {
         case id, url, score, title
@@ -33,6 +27,37 @@ class Item: Decodable, Identifiable {
         case author = "by"
     }
 }
+
+
+
+@Model
+class Item: Identifiable {
+    var id: Int
+    var title: String
+    var author: String
+    var commentCount: Int
+    var score: Int
+    var url: String
+    var date: Date
+    var saved: Bool
+    
+    init(id: Int, title: String, author: String, commentCount: Int, score: Int, url: String, date: Date, saved: Bool = false) {
+        self.id = id
+        self.title = title
+        self.author = author
+        self.commentCount = commentCount
+        self.score = score
+        self.url = url
+        self.date = date
+        self.saved = saved
+    }
+    
+// Convert from DTO to Item
+    convenience init(from dto: ItemDTO) {
+        self.init(id: dto.id, title: dto.title, author: dto.author, commentCount: dto.commentCount, score: dto.score, url: dto.url, date: dto.date)
+    }
+}
+
 
 // extension with static mock item
 extension Item {
@@ -44,32 +69,6 @@ extension Item {
         score: 42,
         url: "https://example.com",
         date: Date()
-        
     )
-}
-
-@Model
-class LocalItem {
-    var id: Int
-    var title: String
-    var author: String
-    var commentCount: Int
-    var score: Int
-    var url: String
-    var date: Date
-    
-    var saved: Bool
-    
-    init(story:Item, saved: Bool) {
-        self.id = story.id
-        self.title = story.title
-        self.author = story.author
-        self.commentCount = story.commentCount
-        self.score = story.score
-        self.url = story.url
-        self.date = story.date
-        
-        self.saved = true
-    }
 }
 

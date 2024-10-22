@@ -17,7 +17,7 @@ struct HackerNewsDemoApp: App {
             NavigationStack {
                 ContentView()
             }
-            .modelContainer(for: LocalItem.self, inMemory: false) // Moved here
+            .modelContainer(for: Item.self, inMemory: false) // Moved here
         }
     }
     init() {
