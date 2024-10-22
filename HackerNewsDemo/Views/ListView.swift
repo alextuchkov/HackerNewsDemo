@@ -11,7 +11,7 @@ struct ListView: View {
     @State var viewModel = ViewModel()
     let type: String
     let navtitle: String
-    
+
     var body: some View {
         NavigationView {
             List(viewModel.stories) { story in
@@ -28,7 +28,7 @@ struct ListView: View {
             }
             .task {
                 do {
-                    try await viewModel.getBestStories(withType: type) // Fetch stories when view loads
+                    try await viewModel.getBestStories(withType: type)
                 } catch {
                     print("Failed to load stories: \(error.localizedDescription)")
                 }
